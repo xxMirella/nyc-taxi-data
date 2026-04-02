@@ -9,6 +9,10 @@ resource "aws_s3_bucket" "taxi_data" {
   }
 }
 
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "${var.bucket_name}-tf-state"
+}
+
 resource "aws_s3_bucket_ownership_controls" "taxi_data" {
   bucket = aws_s3_bucket.taxi_data.id
 

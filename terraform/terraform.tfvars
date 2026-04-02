@@ -15,3 +15,9 @@ external_location_name    = "nyc_taxi_bronze_location"
 databricks_principal_arn  = "arn:aws:iam::414351767826:role/unity-catalog-prod-UCMasterRole-ABC123"
 databricks_external_id    = "external-id-gerado-ou-definido-no-seu-processo"
 databricks_group_name     = "data-engineering"
+
+
+github_repo               = "mirella-souza/nyc-taxi-databricks"
+github_branch             = "main"
+github_environment        = ""
+deploy_role_name          = "github-actions-terraform-role"
