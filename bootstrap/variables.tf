@@ -45,7 +45,7 @@ variable "deploy_role_name" {
 }
 
 variable "deploy_role_policy_arn" {
-  description = "ARN da policy anexada à role de deploy (ex: AdministratorAccess para início)"
+  description = "ARN da policy anexada à role de deploy"
   type        = string
   default     = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
@@ -61,5 +61,6 @@ variable "tags" {
   default = {
     Project     = "nyc-taxi-databricks"
     ManagedBy   = "terraform"
+    Environment = "dev"
   }
 }

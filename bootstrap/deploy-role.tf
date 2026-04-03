@@ -1,7 +1,5 @@
 locals {
-  github_sub = var.github_environment != ""
-    ? "repo:${var.github_repo}:environment:${var.github_environment}"
-    : "repo:${var.github_repo}:ref:refs/heads/${var.github_branch}"
+  github_sub = var.github_environment != "" ? "repo:${var.github_repo}:environment:${var.github_environment}" : "repo:${var.github_repo}:ref:refs/heads/${var.github_branch}"
 }
 
 data "aws_iam_policy_document" "github_actions_assume_role" {
@@ -15,9 +13,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
 
     principals {
       type        = "Federated"
-      identifiers = [
-        aws_iam_openid_connect_provider.github.arn
-      ]
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {
