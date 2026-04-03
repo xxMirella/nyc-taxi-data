@@ -1,19 +1,19 @@
 output "bucket_name" {
-  value = aws_s3_bucket.taxi_data.bucket
+  value = module.aws.bucket_name
 }
 
 output "iam_role_arn" {
-  value = aws_iam_role.databricks_s3_role.arn
+  value = module.aws.databricks_role_arn
 }
 
 output "storage_credential_name" {
-  value = databricks_storage_credential.bronze_credential.name
+  value = module.databricks.storage_credential_name
 }
 
 output "external_location_name" {
-  value = databricks_external_location.bronze_location.name
+  value = module.databricks.external_location_name
 }
 
 output "external_location_url" {
-  value = databricks_external_location.bronze_location.url
+  value = module.databricks.external_location_url
 }

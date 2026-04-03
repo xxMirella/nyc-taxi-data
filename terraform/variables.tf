@@ -56,17 +56,25 @@ variable "external_location_name" {
 }
 
 variable "databricks_principal_arn" {
-  description = "Databricks AWS principal ARN used to assume the role"
+  description = "Principal ARN da Databricks para assumir a role"
   type        = string
+  default     = "arn:aws:iam::000000000000:root"
 }
 
 variable "databricks_external_id" {
-  description = "External ID used in the trust relationship"
+  description = "External ID gerado pela Databricks storage credential"
   type        = string
+  default     = "TEMP_EXTERNAL_ID"
 }
 
 variable "databricks_group_name" {
   description = "Databricks group that will receive privileges"
   type        = string
   default     = "data-engineering"
+}
+
+variable "enable_databricks_storage" {
+  description = "Se true, cria storage credential e external location"
+  type        = bool
+  default     = false
 }
