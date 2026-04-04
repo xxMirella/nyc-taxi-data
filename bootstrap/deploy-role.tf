@@ -1,7 +1,9 @@
-locals {
-  github_sub = var.github_environment != ""
-    ? "repo:${var.github_repo}:environment:${var.github_environment}"
-    : "repo:${var.github_repo}:ref:refs/heads/${var.github_branch}"
+variable "github_repo" {
+  type = string
+}
+
+variable "github_oidc_subjects" {
+  type = list(string)
 }
 
 data "aws_iam_policy_document" "github_actions_assume_role" {
@@ -9,15 +11,11 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
     sid    = "AllowGitHubActionsOIDC"
     effect = "Allow"
 
-    actions = [
-      "sts:AssumeRoleWithWebIdentity"
-    ]
+    actions = ["sts:AssumeRoleWithWebIdentity"]
 
     principals {
       type        = "Federated"
-      identifiers = [
-        aws_iam_openid_connect_provider.github.arn
-      ]
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {
@@ -27,9 +25,9 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "ForAnyValue:StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [local.github_sub]
+      values   = var.github_oidc_subjects
     }
   }
 }

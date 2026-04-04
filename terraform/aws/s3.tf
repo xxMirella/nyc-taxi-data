@@ -9,10 +9,6 @@ resource "aws_s3_bucket" "taxi_data" {
   }
 }
 
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "${var.bucket_name}-tf-state"
-}
-
 resource "aws_s3_bucket_ownership_controls" "taxi_data" {
   bucket = aws_s3_bucket.taxi_data.id
 
@@ -36,8 +32,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "taxi_data" {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
     }
-
-    bucket_key_enabled = false
   }
 }
 
