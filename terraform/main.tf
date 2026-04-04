@@ -13,12 +13,12 @@ module "aws" {
 module "databricks" {
   source = "./databricks"
 
-  bucket_name             = var.bucket_name
-  bronze_prefix           = var.bronze_prefix
-  storage_credential_name = var.storage_credential_name
-  external_location_name  = var.external_location_name
-  databricks_group_name   = var.databricks_group_name
-  databricks_role_arn     = module.aws.databricks_role_arn
+  bucket_name               = var.bucket_name
+  bronze_prefix             = var.bronze_prefix
+  storage_credential_name   = var.storage_credential_name
+  external_location_name    = var.external_location_name
+  databricks_group_name     = var.databricks_group_name
+  databricks_role_arn       = module.aws.databricks_role_arn
   enable_databricks_storage = var.enable_databricks_storage
 
   depends_on = [module.aws]
