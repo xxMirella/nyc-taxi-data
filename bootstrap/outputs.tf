@@ -12,3 +12,7 @@ output "github_actions_role_name" {
   description = "Nome da role criada para o GitHub Actions"
   value       = aws_iam_role.github_actions_deploy_role.name
 }
+
+output "state_bucket_name" {
+  value = aws_s3_bucket.terraform_state.bucket
+}

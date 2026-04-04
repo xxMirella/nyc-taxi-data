@@ -8,6 +8,7 @@ on:
       - "terraform/**"
       - ".github/workflows/terraform-plan.yml"
       - ".github/workflows/terraform-apply.yml"
+      - ".github/workflows/terraform-ci.yml"
 
 permissions:
   contents: read
@@ -21,6 +22,7 @@ env:
   TF_IN_AUTOMATION: "true"
   TF_INPUT: "false"
   TF_CLI_ARGS: "-no-color"
+  TERRAFORM_WORKING_DIR: terraform
 
 jobs:
   terraform-apply:
@@ -29,9 +31,28 @@ jobs:
     timeout-minutes: 30
     environment: production
 
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+      TF_VAR_aws_region: ${{ vars.AWS_REGION }}
+      TF_VAR_aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+      TF_VAR_bucket_name: ${{ vars.BUCKET_NAME }}
+      TF_VAR_bronze_prefix: ${{ vars.BRONZE_PREFIX }}
+      TF_VAR_role_name: ${{ vars.ROLE_NAME }}
+      TF_VAR_policy_name: ${{ vars.POLICY_NAME }}
+      TF_VAR_storage_credential_name: ${{ vars.STORAGE_CREDENTIAL_NAME }}
+      TF_VAR_external_location_name: ${{ vars.EXTERNAL_LOCATION_NAME }}
+      TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+      TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
+      TF_VAR_databricks_principal_arn: ${{ vars.DATABRICKS_PRINCIPAL_ARN }}
+      TF_VAR_databricks_external_id: ${{ vars.DATABRICKS_EXTERNAL_ID }}
+      TF_VAR_databricks_group_name: ${{ vars.DATABRICKS_GROUP_NAME }}
+
     defaults:
       run:
-        working-directory: terraform
+        working-directory: ${{ env.TERRAFORM_WORKING_DIR }}
         shell: bash
 
     steps:
@@ -44,16 +65,9 @@ jobs:
       - name: Configure AWS credentials with OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-
-      - name: Export Databricks auth
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-        run: |
-          echo "DATABRICKS_HOST=${DATABRICKS_HOST}" >> $GITHUB_ENV
-          echo "DATABRICKS_TOKEN=${DATABRICKS_TOKEN}" >> $GITHUB_ENV
+          role-session-name: gha-terraform-apply
 
       - name: Terraform Init
         run: terraform init

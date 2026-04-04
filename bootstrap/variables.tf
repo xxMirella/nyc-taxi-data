@@ -13,6 +13,12 @@ variable "aws_account_id" {
   type        = string
 }
 
+variable "bucket_name" {
+  description = "S3 bucket name"
+  type        = string
+  default     = "55-taxi-data"
+}
+
 ###############################################
 # GITHUB CONFIG (OIDC)
 ###############################################
