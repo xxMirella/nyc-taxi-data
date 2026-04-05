@@ -1,14 +1,30 @@
 locals {
-  has_valid_databricks_principal = trimspace(var.databricks_principal_arn) != "" && var.databricks_principal_arn != "arn:aws:iam::000000000000:root"
-  has_valid_databricks_external  = trimspace(var.databricks_external_id) != "" && var.databricks_external_id != "TEMP_EXTERNAL_ID"
-  create_databricks_role         = local.has_valid_databricks_principal && local.has_valid_databricks_external
+  is_final_trust     = var.databricks_external_id != ""
+  selected_trust_doc = local.is_final_trust ? data.aws_iam_policy_document.databricks_trust_final.json : data.aws_iam_policy_document.databricks_trust_initial.json
 }
 
-data "aws_iam_policy_document" "databricks_trust" {
-  count = local.create_databricks_role ? 1 : 0
-
+data "aws_iam_policy_document" "databricks_trust_initial" {
   statement {
-    sid     = "AllowDatabricksAssumeRole"
+    sid     = "AllowDatabricksAssumeRoleInitial"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [var.databricks_principal_arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "sts:ExternalId"
+      values   = ["0000"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "databricks_trust_final" {
+  statement {
+    sid     = "AllowDatabricksAssumeRoleFinal"
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
@@ -23,18 +39,25 @@ data "aws_iam_policy_document" "databricks_trust" {
       values   = [var.databricks_external_id]
     }
   }
+
+  statement {
+    sid     = "AllowSelfAssumeRole"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${var.aws_account_id}:role/${var.role_name}"]
+    }
+  }
 }
 
 resource "aws_iam_role" "databricks_s3_role" {
-  count = local.create_databricks_role ? 1 : 0
-
   name               = var.role_name
-  assume_role_policy = data.aws_iam_policy_document.databricks_trust[0].json
+  assume_role_policy = local.selected_trust_doc
 }
 
 resource "aws_iam_role_policy_attachment" "databricks_attach_policy" {
-  count = local.create_databricks_role ? 1 : 0
-
-  role       = aws_iam_role.databricks_s3_role[0].name
+  role       = aws_iam_role.databricks_s3_role.name
   policy_arn = aws_iam_policy.databricks_s3_policy.arn
 }
