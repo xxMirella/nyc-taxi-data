@@ -3,5 +3,5 @@ output "bucket_name" {
 }
 
 output "databricks_role_arn" {
-  value = length(aws_iam_role.databricks_s3_role) > 0 ? aws_iam_role.databricks_s3_role[0].arn : null
+  value = aws_iam_role.databricks_s3_role.arn
 }
