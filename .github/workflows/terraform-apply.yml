@@ -64,6 +64,8 @@ jobs:
           set -euo pipefail
 
           missing=0
+          principal="${{ vars.DATABRICKS_PRINCIPAL_ARN }}"
+          external_id="${{ vars.DATABRICKS_EXTERNAL_ID }}"
 
           check_var() {
             local name="$1"
@@ -92,21 +94,24 @@ jobs:
           check_var "STORAGE_CREDENTIAL_NAME" "${{ vars.STORAGE_CREDENTIAL_NAME }}"
           check_var "EXTERNAL_LOCATION_NAME" "${{ vars.EXTERNAL_LOCATION_NAME }}"
           check_var "DATABRICKS_GROUP_NAME" "${{ vars.DATABRICKS_GROUP_NAME }}"
-          check_var "DATABRICKS_PRINCIPAL_ARN" "${{ vars.DATABRICKS_PRINCIPAL_ARN }}"
-          check_var "DATABRICKS_EXTERNAL_ID" "${{ vars.DATABRICKS_EXTERNAL_ID }}"
           check_var "TF_STATE_BUCKET" "${{ vars.TF_STATE_BUCKET }}"
 
-          check_secret "AWS_DEPLOY_ROLE_ARN" "${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}"
+          check_secret "AWS_GITHUB_ACTIONS_ROLE_ARN" "${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}"
           check_secret "DATABRICKS_HOST" "${{ secrets.DATABRICKS_HOST }}"
           check_secret "DATABRICKS_TOKEN" "${{ secrets.DATABRICKS_TOKEN }}"
 
-          if [ "${{ vars.DATABRICKS_PRINCIPAL_ARN }}" = "arn:aws:iam::000000000000:root" ]; then
+          if [ "$principal" = "arn:aws:iam::000000000000:root" ]; then
             echo "::error title=Invalid Databricks Principal ARN::DATABRICKS_PRINCIPAL_ARN is still using the placeholder value arn:aws:iam::000000000000:root."
             missing=1
           fi
 
-          if [ "${{ vars.DATABRICKS_EXTERNAL_ID }}" = "TEMP_EXTERNAL_ID" ]; then
+          if [ "$external_id" = "TEMP_EXTERNAL_ID" ]; then
             echo "::error title=Invalid Databricks External ID::DATABRICKS_EXTERNAL_ID is still using the placeholder value TEMP_EXTERNAL_ID."
+            missing=1
+          fi
+
+          if { [ -n "$principal" ] && [ -z "$external_id" ]; } || { [ -z "$principal" ] && [ -n "$external_id" ]; }; then
+            echo "::error title=Incomplete Databricks configuration::DATABRICKS_PRINCIPAL_ARN and DATABRICKS_EXTERNAL_ID must both be set together, or both left empty."
             missing=1
           fi
 
