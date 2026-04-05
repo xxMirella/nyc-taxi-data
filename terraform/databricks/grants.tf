@@ -1,5 +1,9 @@
+locals {
+  create_databricks_storage = var.enable_databricks_storage && try(trimspace(var.databricks_role_arn), "") != ""
+}
+
 resource "databricks_storage_credential" "bronze_credential" {
-  count = var.enable_databricks_storage ? 1 : 0
+  count = local.create_databricks_storage ? 1 : 0
 
   name = var.storage_credential_name
 
@@ -11,7 +15,7 @@ resource "databricks_storage_credential" "bronze_credential" {
 }
 
 resource "databricks_external_location" "bronze_location" {
-  count = var.enable_databricks_storage ? 1 : 0
+  count = local.create_databricks_storage ? 1 : 0
 
   name            = var.external_location_name
   url             = "s3://${var.bucket_name}/${var.bronze_prefix}"
