@@ -60,6 +60,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate required CI environment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          missing=0
+
+          check_var() {
+            local name="$1"
+            local value="$2"
+            if [ -z "$value" ]; then
+              echo "::error title=Missing GitHub Environment Variable::$name is not configured in the 'ci' environment."
+              missing=1
+            fi
+          }
+
+          check_secret() {
+            local name="$1"
+            local value="$2"
+            if [ -z "$value" ]; then
+              echo "::error title=Missing GitHub Environment Secret::$name is not configured in the 'ci' environment or is unavailable for this run."
+              missing=1
+            fi
+          }
+
+          check_var "AWS_REGION" "${{ vars.AWS_REGION }}"
+          check_var "AWS_ACCOUNT_ID" "${{ vars.AWS_ACCOUNT_ID }}"
+          check_var "BUCKET_NAME" "${{ vars.BUCKET_NAME }}"
+          check_var "TF_STATE_BUCKET" "${{ vars.TF_STATE_BUCKET }}"
+
+          check_secret "AWS_DEPLOY_ROLE_ARN" "${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}"
+          check_secret "DATABRICKS_HOST" "${{ secrets.DATABRICKS_HOST }}"
+          check_secret "DATABRICKS_TOKEN" "${{ secrets.DATABRICKS_TOKEN }}"
+
+          if [ "$missing" -ne 0 ]; then
+            echo ""
+            echo "One or more required variables/secrets are missing from the GitHub Environment 'ci'."
+            echo "Fix the missing entries above and rerun the workflow."
+            exit 1
+          fi
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -72,7 +113,9 @@ jobs:
 
       - name: Generate backend.hcl
         working-directory: ${{ env.TERRAFORM_WORKING_DIR }}
+        shell: bash
         run: |
+          set -euo pipefail
           cat > backend.hcl <<EOF
           bucket       = "${{ vars.TF_STATE_BUCKET }}"
           key          = "${{ github.repository }}/ci/terraform.tfstate"

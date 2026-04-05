@@ -58,13 +58,13 @@ variable "external_location_name" {
 variable "databricks_principal_arn" {
   description = "Principal ARN da Databricks para assumir a role"
   type        = string
-  default     = "arn:aws:iam::000000000000:root"
+  default     = ""
 }
 
 variable "databricks_external_id" {
   description = "External ID gerado pela Databricks storage credential"
   type        = string
-  default     = "TEMP_EXTERNAL_ID"
+  default     = ""
 }
 
 variable "databricks_group_name" {

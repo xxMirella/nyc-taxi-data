@@ -58,6 +58,65 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate required production environment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          missing=0
+
+          check_var() {
+            local name="$1"
+            local value="$2"
+            if [ -z "$value" ]; then
+              echo "::error title=Missing GitHub Environment Variable::$name is not configured in the 'production' environment."
+              missing=1
+            fi
+          }
+
+          check_secret() {
+            local name="$1"
+            local value="$2"
+            if [ -z "$value" ]; then
+              echo "::error title=Missing GitHub Environment Secret::$name is not configured in the 'production' environment or is unavailable for this run."
+              missing=1
+            fi
+          }
+
+          check_var "AWS_REGION" "${{ vars.AWS_REGION }}"
+          check_var "AWS_ACCOUNT_ID" "${{ vars.AWS_ACCOUNT_ID }}"
+          check_var "BUCKET_NAME" "${{ vars.BUCKET_NAME }}"
+          check_var "BRONZE_PREFIX" "${{ vars.BRONZE_PREFIX }}"
+          check_var "ROLE_NAME" "${{ vars.ROLE_NAME }}"
+          check_var "POLICY_NAME" "${{ vars.POLICY_NAME }}"
+          check_var "STORAGE_CREDENTIAL_NAME" "${{ vars.STORAGE_CREDENTIAL_NAME }}"
+          check_var "EXTERNAL_LOCATION_NAME" "${{ vars.EXTERNAL_LOCATION_NAME }}"
+          check_var "DATABRICKS_GROUP_NAME" "${{ vars.DATABRICKS_GROUP_NAME }}"
+          check_var "DATABRICKS_PRINCIPAL_ARN" "${{ vars.DATABRICKS_PRINCIPAL_ARN }}"
+          check_var "DATABRICKS_EXTERNAL_ID" "${{ vars.DATABRICKS_EXTERNAL_ID }}"
+          check_var "TF_STATE_BUCKET" "${{ vars.TF_STATE_BUCKET }}"
+
+          check_secret "AWS_DEPLOY_ROLE_ARN" "${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}"
+          check_secret "DATABRICKS_HOST" "${{ secrets.DATABRICKS_HOST }}"
+          check_secret "DATABRICKS_TOKEN" "${{ secrets.DATABRICKS_TOKEN }}"
+
+          if [ "${{ vars.DATABRICKS_PRINCIPAL_ARN }}" = "arn:aws:iam::000000000000:root" ]; then
+            echo "::error title=Invalid Databricks Principal ARN::DATABRICKS_PRINCIPAL_ARN is still using the placeholder value arn:aws:iam::000000000000:root."
+            missing=1
+          fi
+
+          if [ "${{ vars.DATABRICKS_EXTERNAL_ID }}" = "TEMP_EXTERNAL_ID" ]; then
+            echo "::error title=Invalid Databricks External ID::DATABRICKS_EXTERNAL_ID is still using the placeholder value TEMP_EXTERNAL_ID."
+            missing=1
+          fi
+
+          if [ "$missing" -ne 0 ]; then
+            echo ""
+            echo "One or more required variables/secrets are missing or invalid in the GitHub Environment 'production'."
+            echo "Fix the missing entries above and rerun the workflow."
+            exit 1
+          fi
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -70,6 +129,7 @@ jobs:
 
       - name: Generate backend.hcl
         run: |
+          set -euo pipefail
           cat > backend.hcl <<EOF
           bucket       = "${{ vars.TF_STATE_BUCKET }}"
           key          = "${{ github.repository }}/production/terraform.tfstate"
