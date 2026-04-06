@@ -56,9 +56,7 @@ data "aws_iam_policy_document" "databricks_trust_final" {
 resource "aws_iam_role" "databricks_s3_role" {
   name = var.role_name
 
-  assume_role_policy = local.is_final_trust
-    ? data.aws_iam_policy_document.databricks_trust_final.json
-    : data.aws_iam_policy_document.databricks_trust_initial.json
+  assume_role_policy = local.is_final_trust ? data.aws_iam_policy_document.databricks_trust_final.json : data.aws_iam_policy_document.databricks_trust_initial.json
 
   lifecycle {
     precondition {
