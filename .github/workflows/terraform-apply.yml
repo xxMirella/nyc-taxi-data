@@ -45,7 +45,7 @@ jobs:
       TF_VAR_external_location_name: ${{ vars.EXTERNAL_LOCATION_NAME }}
       TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
       TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
-      TF_VAR_databricks_principal_arn: ${{ vars.DATABRICKS_PRINCIPAL_ARN }}
+      TF_VAR_databricks_principal_arn: ${{ secrets.DATABRICKS_PRINCIPAL_ARN }}
       TF_VAR_databricks_external_id: ${{ vars.DATABRICKS_EXTERNAL_ID }}
       TF_VAR_databricks_group_name: ${{ vars.DATABRICKS_GROUP_NAME }}
 
@@ -64,7 +64,7 @@ jobs:
           set -euo pipefail
 
           missing=0
-          principal="${{ vars.DATABRICKS_PRINCIPAL_ARN }}"
+          principal="${{ secrets.DATABRICKS_PRINCIPAL_ARN }}"
           external_id="${{ vars.DATABRICKS_EXTERNAL_ID }}"
 
           check_var() {
@@ -110,8 +110,13 @@ jobs:
             missing=1
           fi
 
-          if { [ -n "$principal" ] && [ -z "$external_id" ]; } || { [ -z "$principal" ] && [ -n "$external_id" ]; }; then
-            echo "::error title=Incomplete Databricks configuration::DATABRICKS_PRINCIPAL_ARN and DATABRICKS_EXTERNAL_ID must both be set together, or both left empty."
+          if [ -z "$principal" ] && [ -n "$external_id" ]; then
+            echo "::error title=Invalid Databricks configuration::DATABRICKS_EXTERNAL_ID cannot be set when DATABRICKS_PRINCIPAL_ARN is empty."
+            missing=1
+          fi
+          
+          if [ -z "$principal" ]; then
+            echo "::error title=Missing Databricks Principal ARN::DATABRICKS_PRINCIPAL_ARN must be configured to create the Databricks IAM role."
             missing=1
           fi
 
