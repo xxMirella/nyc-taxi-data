@@ -35,14 +35,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Validate CI Databricks principal
-        shell: bash
-        run: |
-          if [ -z "${{ secrets.DATABRICKS_PRINCIPAL_ARN }}" ]; then
-            echo "::error title=Missing Databricks principal ARN::Configure DATABRICKS_PRINCIPAL_ARN in the 'ci' environment variables."
-            exit 1
-          fi
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
