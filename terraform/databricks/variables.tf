@@ -18,11 +18,17 @@ variable "databricks_group_name" {
   type = string
 }
 
-variable "databricks_role_arn" {
-  type = string
-}
-
 variable "enable_databricks_storage" {
   type    = bool
   default = false
+}
+
+variable "databricks_external_id" {
+  type    = string
+  default = ""
+}
+
+variable "databricks_role_arn" {
+  type    = string
+  default = ""
 }
