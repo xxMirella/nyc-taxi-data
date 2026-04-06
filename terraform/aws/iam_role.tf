@@ -1,7 +1,7 @@
 locals {
   selected_trust_doc = local.is_final_trust ? data.aws_iam_policy_document.databricks_trust_final.json : data.aws_iam_policy_document.databricks_trust_initial.json
-  principal_clean = trimspace(var.databricks_principal_arn)
-  is_final_trust = trimspace(var.databricks_external_id) != ""
+  principal_clean    = trimspace(var.databricks_principal_arn)
+  is_final_trust     = trimspace(var.databricks_external_id) != ""
 }
 
 data "aws_iam_policy_document" "databricks_trust_initial" {

@@ -1,4 +1,4 @@
-bucket_name  = "55-taxi-data"
+bucket_name   = "55-taxi-data"
 bronze_prefix = "nyc_taxi/bronze"
 
 role_name   = "databricks-nyc-taxi-bronze-role"
