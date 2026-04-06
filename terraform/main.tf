@@ -17,9 +17,9 @@ module "databricks" {
   databricks_external_id    = var.databricks_external_id
   databricks_role_arn       = module.aws.databricks_role_arn
 
-  bucket_name               = var.bucket_name
-  bronze_prefix             = var.bronze_prefix
-  storage_credential_name   = var.storage_credential_name
-  external_location_name    = var.external_location_name
-  databricks_group_name     = var.databricks_group_name
+  bucket_name             = var.bucket_name
+  bronze_prefix           = var.bronze_prefix
+  storage_credential_name = var.storage_credential_name
+  external_location_name  = var.external_location_name
+  databricks_group_name   = var.databricks_group_name
 }
