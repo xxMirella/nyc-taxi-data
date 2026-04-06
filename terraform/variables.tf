@@ -74,5 +74,5 @@ variable "databricks_group_name" {
 variable "enable_databricks_storage" {
   description = "Se true, cria storage credential e external location"
   type        = bool
-  default     = false
+  default     = true
 }
