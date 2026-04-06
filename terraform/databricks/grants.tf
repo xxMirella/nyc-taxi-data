@@ -1,5 +1,5 @@
 locals {
-  create_databricks_storage = var.enable_databricks_storage && try(trimspace(var.databricks_role_arn), "") != ""
+  create_databricks_storage = var.enable_databricks_storage && trimspace(var.databricks_external_id) != ""
 }
 
 resource "databricks_storage_credential" "bronze_credential" {
@@ -10,8 +10,7 @@ resource "databricks_storage_credential" "bronze_credential" {
   aws_iam_role {
     role_arn = var.databricks_role_arn
   }
-
-  comment = "Storage credential for NYC Taxi bronze layer"
+  comment = "Storage credential for bronze S3 location"
 }
 
 resource "databricks_external_location" "bronze_location" {
@@ -20,5 +19,5 @@ resource "databricks_external_location" "bronze_location" {
   name            = var.external_location_name
   url             = "s3://${var.bucket_name}/${var.bronze_prefix}"
   credential_name = databricks_storage_credential.bronze_credential[0].name
-  comment         = "External location for NYC Taxi bronze layer"
+  comment         = "External location for bronze layer"
 }

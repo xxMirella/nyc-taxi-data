@@ -35,6 +35,7 @@ jobs:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
+      TF_VAR_enable_databricks_storage: ${{ vars.ENABLE_DATABRICKS_STORAGE }}
       TF_VAR_aws_region: ${{ vars.AWS_REGION }}
       TF_VAR_aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
       TF_VAR_bucket_name: ${{ vars.BUCKET_NAME }}
@@ -95,6 +96,7 @@ jobs:
           check_var "EXTERNAL_LOCATION_NAME" "${{ vars.EXTERNAL_LOCATION_NAME }}"
           check_var "DATABRICKS_GROUP_NAME" "${{ vars.DATABRICKS_GROUP_NAME }}"
           check_var "TF_STATE_BUCKET" "${{ vars.TF_STATE_BUCKET }}"
+          check_var "TF_VAR_ENABLE_DATABRICKS_STORAGE" "${{ vars.ENABLE_DATABRICKS_STORAGE }}"
 
           check_secret "AWS_GITHUB_ACTIONS_ROLE_ARN" "${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}"
           check_secret "DATABRICKS_HOST" "${{ secrets.DATABRICKS_HOST }}"
