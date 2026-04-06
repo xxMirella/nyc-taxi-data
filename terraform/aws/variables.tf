@@ -19,9 +19,11 @@ variable "policy_name" {
 }
 
 variable "databricks_principal_arn" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "databricks_external_id" {
-  type = string
+  type    = string
+  default = ""
 }
