@@ -40,31 +40,6 @@ jobs:
         with:
           terraform_version: 1.10.5
 
-      - name: Validate CI environment variables
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          missing=0
-
-          check_var() {
-            local name="$1"
-            local value="$2"
-            if [ -z "$value" ]; then
-              echo "::error title=Missing GitHub Environment Variable::$name is not configured for this workflow."
-              missing=1
-            fi
-          }
-
-          check_var "AWS_REGION" "${{ vars.AWS_REGION }}"
-
-          if [ "$missing" -ne 0 ]; then
-            echo ""
-            echo "One or more required variables are missing."
-            echo "Configure them in the GitHub environment or repository variables and rerun the workflow."
-            exit 1
-          fi
-
       - name: Terraform Format Check
         working-directory: ${{ env.TERRAFORM_WORKING_DIR }}
         shell: bash
