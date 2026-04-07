@@ -27,7 +27,6 @@ resource "databricks_job" "nyc_taxi_pipeline" {
         package = "opentelemetry-exporter-otlp"
       }
     }
-
     library {
       pypi {
         package = "watchtower"
