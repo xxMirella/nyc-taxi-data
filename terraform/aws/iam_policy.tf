@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "databricks_s3_access" {
   statement {
     sid       = "ListBronzePrefix"
     effect    = "Allow"
-    actions   = ["s3:ListBucket"]
+    actions   = ["s3:ListBucket", "s3:GetBucketLocation"]
     resources = ["arn:aws:s3:::${var.bucket_name}"]
 
     condition {
@@ -14,6 +14,23 @@ data "aws_iam_policy_document" "databricks_s3_access" {
         "${var.bronze_prefix}/*"
       ]
     }
+  }
+  statement {
+    sid       = "AllowRootAccessForCatalog"
+    effect    = "Allow"
+    actions   = ["s3:ListBucket", "s3:GetBucketLocation"]
+    resources = ["arn:aws:s3:::${var.bucket_name}"]
+  }
+
+  statement {
+    sid    = "AllowCatalogFolderAccess"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject"
+    ]
+    resources = ["arn:aws:s3:::${var.bucket_name}/nyc_taxi_catalog/*"]
   }
 
   statement {
