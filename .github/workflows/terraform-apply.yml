@@ -48,7 +48,7 @@ jobs:
       TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
       TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
       TF_VAR_databricks_principal_arn: ${{ secrets.DATABRICKS_PRINCIPAL_ARN }}
-      TF_VAR_databricks_external_id: ${{ vars.DATABRICKS_EXTERNAL_ID }}
+      TF_VAR_databricks_external_id: ${{ secrets.DATABRICKS_EXTERNAL_ID }}
       TF_VAR_databricks_group_name: ${{ vars.DATABRICKS_GROUP_NAME }}
 
     defaults:
@@ -67,7 +67,7 @@ jobs:
 
           missing=0
           principal="${{ secrets.DATABRICKS_PRINCIPAL_ARN }}"
-          external_id="${{ vars.DATABRICKS_EXTERNAL_ID }}"
+          external_id="${{ secrets.DATABRICKS_EXTERNAL_ID }}"
 
           check_var() {
             local name="$1"
