@@ -21,3 +21,21 @@ resource "databricks_external_location" "bronze_location" {
   credential_name = databricks_storage_credential.bronze_credential[0].name
   comment         = "External location for bronze layer"
 }
+
+resource "databricks_grant" "catalog_use" {
+  catalog    = "workspace"
+  principal  = var.databricks_user_email
+  privileges = ["USE_CATALOG"]
+}
+
+resource "databricks_grant" "schema_use" {
+  schema     = databricks_schema.production.id
+  principal  = var.databricks_user_email
+  privileges = ["USE_SCHEMA"]
+}
+
+resource "databricks_grant" "volume_read" {
+  volume     = databricks_volume.scripts.id
+  principal  = var.databricks_user_email
+  privileges = ["READ_VOLUME"]
+}

@@ -17,6 +17,10 @@ resource "databricks_file" "main_script" {
 resource "databricks_job" "nyc_taxi_pipeline" {
   name = var.job_name
 
+  run_as {
+    user_name = var.databricks_user_email
+  }
+
   environment {
     environment_key = "prod_env"
     spec {

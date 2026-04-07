@@ -16,6 +16,7 @@ module "databricks" {
   enable_databricks_storage = var.enable_databricks_storage
   databricks_external_id    = var.databricks_external_id
   databricks_role_arn       = module.aws.databricks_role_arn
+  databricks_user_email     = var.databricks_user_email
 
   bucket_name             = var.bucket_name
   bronze_prefix           = var.bronze_prefix
