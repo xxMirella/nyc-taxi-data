@@ -12,6 +12,7 @@ resource "databricks_file" "code_bundle" {
 resource "databricks_file" "main_script" {
   path   = "${databricks_volume.scripts.volume_path}/main.py"
   source = "${path.module}/../../src/main.py"
+  md5    = filemd5("${path.module}/../../src/main.py")
 }
 
 resource "databricks_job" "nyc_taxi_pipeline" {
@@ -42,4 +43,8 @@ resource "databricks_job" "nyc_taxi_pipeline" {
       ]
     }
   }
+  depends_on = [
+    databricks_file.main_script,
+    databricks_file.code_bundle
+  ]
 }
