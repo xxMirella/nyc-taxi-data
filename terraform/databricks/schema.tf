@@ -1,7 +1,7 @@
 resource "databricks_catalog" "nyc_taxi" {
-  name         = "nyc_taxi_catalog"
-  owner        = var.databricks_user_email
-  comment      = "Catálogo dedicado para o pipeline NYC Taxi"
+  name          = "nyc_taxi_catalog"
+  owner         = var.databricks_user_email
+  comment       = "Catálogo dedicado para o pipeline NYC Taxi"
   force_destroy = true
 }
 
