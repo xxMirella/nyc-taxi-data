@@ -15,6 +15,23 @@ data "aws_iam_policy_document" "databricks_s3_access" {
       ]
     }
   }
+  statement {
+    sid    = "AllowRootAccessForCatalog"
+    effect = "Allow"
+    actions = ["s3:ListBucket", "s3:GetBucketLocation"]
+    resources = ["arn:aws:s3:::${var.bucket_name}"]
+  }
+
+  statement {
+    sid    = "AllowCatalogFolderAccess"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject"
+    ]
+    resources = ["arn:aws:s3:::${var.bucket_name}/nyc_taxi_catalog/*"]
+  }
 
   statement {
     sid    = "ReadWriteBronzeObjects"
@@ -29,7 +46,6 @@ data "aws_iam_policy_document" "databricks_s3_access" {
       "s3:ListMultipartUploadParts"
     ]
     resources = [
-      "arn:aws:s3:::${var.bucket_name}",
       "arn:aws:s3:::${var.bucket_name}/${var.bronze_prefix}/*",
       "arn:aws:s3:::${var.bucket_name}/_artifacts/*"
     ]
