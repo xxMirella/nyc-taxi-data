@@ -1,16 +1,17 @@
-resource "null_resource" "build_wheel" {
-  provisioner "local-exec" {
-    command = "python3 setup.py bdist_wheel"
-  }
-  triggers = {
-    always_run = timestamp()
-  }
+data "archive_file" "bundle" {
+  type        = "zip"
+  source_dir  = "${path.module}/../../src"
+  output_path = "${path.module}/bundle.zip"
 }
 
-resource "databricks_file" "wheel_package" {
-  depends_on = [null_resource.build_wheel]
-  path       = "${databricks_volume.scripts.volume_path}/nyc_taxi_pipeline-0.1-py3-none-any.whl"
-  source     = "${path.module}/../../dist/nyc_taxi_pipeline-0.1-py3-none-any.whl"
+resource "databricks_file" "code_bundle" {
+  path   = "${databricks_volume.scripts.volume_path}/bundle.zip"
+  source = data.archive_file.bundle.output_path
+}
+
+resource "databricks_file" "main_script" {
+  path   = "${databricks_volume.scripts.volume_path}/main.py"
+  source = "${path.module}/../../src/main.py"
 }
 
 resource "databricks_job" "nyc_taxi_pipeline" {
@@ -27,13 +28,13 @@ resource "databricks_job" "nyc_taxi_pipeline" {
     task_key        = "execute_medallion_pipeline"
     environment_key = "prod_env"
 
-    library {
-      whl = databricks_file.wheel_package.path
-    }
-
     spark_python_task {
-      python_file = "${databricks_volume.scripts.volume_path}/main.py"
-      parameters  = ["--env", var.environment]
+      python_file = databricks_file.main_script.path
+
+      parameters = [
+        "--env", var.environment,
+        "--zip_path", databricks_file.code_bundle.path
+      ]
     }
   }
 }
