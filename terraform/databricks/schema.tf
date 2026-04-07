@@ -1,8 +1,9 @@
 resource "databricks_catalog" "nyc_taxi" {
-  name          = "nyc_taxi_catalog"
-  owner         = var.databricks_user_email
-  comment       = "Catálogo dedicado para o pipeline NYC Taxi"
-  force_destroy = true
+  name             = "nyc_taxi_catalog"
+  owner            = var.databricks_user_email
+  comment          = "Catálogo dedicado para o pipeline NYC Taxi"
+  storage_location = "s3://${var.bucket_name}/nyc_taxi_catalog/"
+  force_destroy    = true
 }
 
 resource "databricks_schema" "production" {
@@ -17,4 +18,11 @@ resource "databricks_volume" "scripts" {
   name         = "pipeline_artifacts"
   volume_type  = "MANAGED"
   owner        = var.databricks_user_email
+}
+
+resource "databricks_external_location" "root_location" {
+  name            = "s3_root_location"
+  url             = "s3://${var.bucket_name}/"
+  credential_name = databricks_storage_credential.bronze_credential[0].name
+  comment         = "Permite ao Unity Catalog gerenciar todo o bucket"
 }
