@@ -5,9 +5,9 @@ resource "databricks_schema" "production" {
 }
 
 resource "databricks_volume" "scripts" {
-  catalog_name     = databricks_schema.production.catalog_name
-  schema_name      = databricks_schema.production.name
-  name             = "pipeline_artifacts"
-  volume_type      = "MANAGED"
-  comment          = "Volume para armazenar scripts Python e arquivos .whl"
+  catalog_name = databricks_schema.production.catalog_name
+  schema_name  = databricks_schema.production.name
+  name         = "pipeline_artifacts"
+  volume_type  = "MANAGED"
+  comment      = "Volume para armazenar scripts Python e arquivos .whl"
 }
