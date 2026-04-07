@@ -70,3 +70,8 @@ resource "aws_iam_role_policy_attachment" "databricks_attach_policy" {
   role       = aws_iam_role.databricks_s3_role.name
   policy_arn = aws_iam_policy.databricks_s3_policy.arn
 }
+
+resource "aws_iam_role_policy_attachment" "databricks_attach_logging" {
+  role       = aws_iam_role.databricks_s3_role.name
+  policy_arn = aws_iam_policy.databricks_logging_policy.arn
+}
