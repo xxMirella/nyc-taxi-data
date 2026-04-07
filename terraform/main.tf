@@ -18,6 +18,7 @@ module "databricks" {
   databricks_role_arn       = module.aws.databricks_role_arn
   databricks_user_email     = var.databricks_user_email
 
+  aws_setup_completed = module.aws.databricks_s3_policy_arn
   bucket_name             = var.bucket_name
   bronze_prefix           = var.bronze_prefix
   storage_credential_name = var.storage_credential_name
