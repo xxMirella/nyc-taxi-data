@@ -4,7 +4,7 @@ resource "databricks_job" "nyc_taxi_pipeline" {
   environment {
     environment_key = "prod_env"
     spec {
-      client = "default"
+      client = "5"
     }
   }
 
