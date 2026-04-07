@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "databricks_s3_access" {
   statement {
     sid       = "ListBronzePrefix"
     effect    = "Allow"
-    actions   = ["s3:ListBucket"]
+    actions   = ["s3:ListBucket", "s3:GetBucketLocation"]
     resources = ["arn:aws:s3:::${var.bucket_name}"]
 
     condition {
@@ -29,6 +29,7 @@ data "aws_iam_policy_document" "databricks_s3_access" {
       "s3:ListMultipartUploadParts"
     ]
     resources = [
+      "arn:aws:s3:::${var.bucket_name}",
       "arn:aws:s3:::${var.bucket_name}/${var.bronze_prefix}/*",
       "arn:aws:s3:::${var.bucket_name}/_artifacts/*"
     ]
