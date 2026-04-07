@@ -52,3 +52,9 @@ variable "databricks_user_email" {
   description = "O e-mail do usuário que possui permissões e executará o Job"
   type        = string
 }
+
+variable "aws_setup_completed" {
+  type        = any
+  description = "Variável técnica para forçar a dependência entre AWS e Databricks"
+  default     = null
+}
