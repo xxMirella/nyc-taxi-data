@@ -16,9 +16,9 @@ data "aws_iam_policy_document" "databricks_s3_access" {
     }
   }
   statement {
-    sid    = "AllowRootAccessForCatalog"
-    effect = "Allow"
-    actions = ["s3:ListBucket", "s3:GetBucketLocation"]
+    sid       = "AllowRootAccessForCatalog"
+    effect    = "Allow"
+    actions   = ["s3:ListBucket", "s3:GetBucketLocation"]
     resources = ["arn:aws:s3:::${var.bucket_name}"]
   }
 

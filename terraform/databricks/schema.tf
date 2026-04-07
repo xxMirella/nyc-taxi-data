@@ -9,7 +9,7 @@ resource "databricks_schema" "production" {
   catalog_name = databricks_catalog.nyc_taxi.name
   name         = "nyc_taxi_prod"
   owner        = var.databricks_user_email
-  depends_on = [databricks_external_location.root_location]
+  depends_on   = [databricks_external_location.root_location]
 }
 
 resource "databricks_volume" "scripts" {
