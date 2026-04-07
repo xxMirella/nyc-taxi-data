@@ -32,7 +32,22 @@ data "aws_iam_policy_document" "databricks_s3_access" {
     ]
     resources = ["arn:aws:s3:::${var.bucket_name}/nyc_taxi_catalog/*"]
   }
-
+  statement {
+      sid    = "AllowProductionFolderAccess"
+      effect = "Allow"
+      actions = [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:ListMultipartUploadParts",
+        "s3:AbortMultipartUpload"
+      ]
+      resources = [
+        "arn:aws:s3:::${var.bucket_name}/landing/nyc_taxi_catalog/*",
+        "arn:aws:s3:::${var.bucket_name}/${var.bronze_prefix}/*",
+        "arn:aws:s3:::${var.bucket_name}/_artifacts/*"
+      ]
+    }
   statement {
     sid    = "ReadWriteBronzeObjects"
     effect = "Allow"
