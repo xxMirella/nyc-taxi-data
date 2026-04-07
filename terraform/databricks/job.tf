@@ -33,11 +33,12 @@ resource "databricks_job" "nyc_taxi_pipeline" {
     environment_key = "prod_env"
 
     spark_python_task {
-      python_file = databricks_file.main_script.path
+
+      python_file = "/Volumes/${databricks_catalog.nyc_taxi.name}/${databricks_schema.production.name}/${databricks_volume.scripts.name}/main.py"
 
       parameters = [
         "--env", var.environment,
-        "--zip_path", databricks_file.code_bundle.path
+        "--zip_path", "/Volumes/${databricks_catalog.nyc_taxi.name}/${databricks_schema.production.name}/${databricks_volume.scripts.name}/bundle.zip"
       ]
     }
   }
