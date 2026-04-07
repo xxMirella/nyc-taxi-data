@@ -2,7 +2,6 @@ resource "databricks_catalog" "nyc_taxi" {
   name             = "nyc_taxi_catalog"
   owner            = var.databricks_user_email
   comment          = "Catálogo dedicado para o pipeline NYC Taxi"
-  storage_location = "s3://${var.bucket_name}/nyc_taxi_catalog/"
   force_destroy    = true
 }
 
