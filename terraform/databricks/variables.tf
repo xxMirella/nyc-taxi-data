@@ -32,3 +32,24 @@ variable "databricks_role_arn" {
   type    = string
   default = ""
 }
+
+variable "job_name" {
+  description = "Nome do Job no Databricks"
+  type        = string
+}
+
+variable "s3_code_path" {
+  description = "Caminho completo do S3 onde o main.py está armazenado"
+  type        = string
+}
+
+variable "environment" {
+  description = "Ambiente (dev/prod)"
+  type        = string
+}
+
+variable "cluster_node_type" {
+  description = "Tipo de instância do worker"
+  type        = string
+  default     = "i3.xlarge"
+}

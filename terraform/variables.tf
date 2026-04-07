@@ -76,3 +76,7 @@ variable "enable_databricks_storage" {
   type        = bool
   default     = false
 }
+
+variable "env" {
+  type = string
+}
