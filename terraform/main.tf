@@ -25,5 +25,4 @@ module "databricks" {
   job_name                = "NYC_Taxi_Pipeline_${var.env}"
   s3_code_path            = "s3://${var.bucket_name}/_artifacts/main.py"
   environment             = var.env
-  cluster_node_type       = "i3.xlarge"
 }
