@@ -4,13 +4,12 @@ resource "databricks_job" "nyc_taxi_pipeline" {
   environment {
     environment_key = "prod_env"
     spec {
-      client = "13.3.x-scala2.12"
+      client = "1"
     }
   }
 
   task {
-    task_key = "execute_medallion_pipeline"
-
+    task_key        = "execute_medallion_pipeline"
     environment_key = "prod_env"
 
     spark_python_task {
@@ -18,4 +17,6 @@ resource "databricks_job" "nyc_taxi_pipeline" {
       parameters  = ["--env", var.environment]
     }
   }
+
+  max_concurrent_runs = 1
 }
