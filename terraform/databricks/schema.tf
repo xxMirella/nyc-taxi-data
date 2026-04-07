@@ -18,3 +18,11 @@ resource "databricks_volume" "scripts" {
   volume_type  = "MANAGED"
   owner        = var.databricks_user_email
 }
+
+resource "databricks_external_location" "root_location" {
+  count           = local.create_databricks_storage ? 1 : 0
+  name            = "s3_root_location"
+  url             = "s3://${var.bucket_name}/"
+  credential_name = one(databricks_storage_credential.bronze_credential[*].name)
+  comment         = "Permite ao Unity Catalog gerenciar todo o bucket"
+}
