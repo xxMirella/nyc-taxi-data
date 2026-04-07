@@ -50,5 +50,5 @@ variable "environment" {
 
 variable "databricks_user_email" {
   description = "O e-mail do usuário que possui permissões e executará o Job"
-  type        = "string"
+  type        = string
 }

@@ -80,3 +80,8 @@ variable "enable_databricks_storage" {
 variable "env" {
   type = string
 }
+
+variable "databricks_user_email" {
+  description = "E-mail vindo do GitHub Secrets"
+  type        = string
+}
