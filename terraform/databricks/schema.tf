@@ -1,5 +1,5 @@
 resource "databricks_schema" "production" {
-  catalog_name = "workspace.default.nyc_taxi_stage"
+  catalog_name = "workspace"
   name         = "nyc_taxi_prod"
   comment      = "Schema para o pipeline de produção"
 }
