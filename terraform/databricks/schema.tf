@@ -23,7 +23,7 @@ resource "databricks_volume" "scripts" {
 resource "databricks_external_location" "root_location" {
   count           = local.create_databricks_storage ? 1 : 0
   name            = "s3_root_location"
-  url  = "s3://${var.bucket_name}/nyc_taxi_prod/"
+  url             = "s3://${var.bucket_name}/nyc_taxi_prod/"
   credential_name = one(databricks_storage_credential.bronze_credential[*].name)
   comment         = "Permite ao Unity Catalog gerenciar todo o bucket"
 }
