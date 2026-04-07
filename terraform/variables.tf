@@ -78,5 +78,5 @@ variable "enable_databricks_storage" {
 }
 
 variable "env" {
-  type    = string
+  type = string
 }
