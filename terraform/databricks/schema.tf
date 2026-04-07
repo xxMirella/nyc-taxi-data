@@ -10,6 +10,7 @@ resource "databricks_external_location" "root_location" {
 resource "databricks_catalog" "nyc_taxi" {
   name          = "nyc_taxi_catalog"
   owner         = var.databricks_user_email
+  storage_root  = "s3://${var.bucket_name}/landing/nyc_taxi_catalog"
   comment       = "Catálogo dedicado para o pipeline NYC Taxi"
   force_destroy = true
   depends_on    = [databricks_external_location.root_location]
