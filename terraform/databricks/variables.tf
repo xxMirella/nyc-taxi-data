@@ -32,3 +32,11 @@ variable "databricks_role_arn" {
   type    = string
   default = ""
 }
+
+variable "job_name" {
+  type = string
+}
+
+variable "s3_code_path" {
+  type = string
+}
