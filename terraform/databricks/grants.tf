@@ -39,3 +39,9 @@ resource "databricks_grant" "volume_read" {
   principal  = var.databricks_user_email
   privileges = ["READ_VOLUME"]
 }
+
+resource "databricks_grant" "catalog_browse" {
+  catalog    = "workspace"
+  principal  = var.databricks_user_email
+  privileges = ["BROWSE"]
+}
