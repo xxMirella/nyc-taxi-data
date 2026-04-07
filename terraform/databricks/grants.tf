@@ -22,26 +22,20 @@ resource "databricks_external_location" "bronze_location" {
   comment         = "External location for bronze layer"
 }
 
-resource "databricks_grant" "catalog_use" {
-  catalog    = "workspace"
+resource "databricks_grant" "catalog_access" {
+  catalog    = databricks_catalog.nyc_taxi.name
   principal  = var.databricks_user_email
-  privileges = ["USE_CATALOG"]
+  privileges = ["USE_CATALOG", "BROWSE"]
 }
 
-resource "databricks_grant" "schema_use" {
+resource "databricks_grant" "schema_access" {
   schema     = databricks_schema.production.id
   principal  = var.databricks_user_email
-  privileges = ["USE_SCHEMA"]
+  privileges = ["USE_SCHEMA", "CREATE_TABLE"]
 }
 
-resource "databricks_grant" "volume_read" {
+resource "databricks_grant" "volume_access" {
   volume     = databricks_volume.scripts.id
   principal  = var.databricks_user_email
-  privileges = ["READ_VOLUME"]
-}
-
-resource "databricks_grant" "catalog_browse" {
-  catalog    = "workspace"
-  principal  = var.databricks_user_email
-  privileges = ["BROWSE"]
+  privileges = ["READ_VOLUME", "WRITE_VOLUME"]
 }
