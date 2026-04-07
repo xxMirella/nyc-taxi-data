@@ -35,6 +35,7 @@ jobs:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
+      TF_VAR_env: "production"
       TF_VAR_enable_databricks_storage: ${{ vars.ENABLE_DATABRICKS_STORAGE }}
       TF_VAR_aws_region: ${{ vars.AWS_REGION }}
       TF_VAR_aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}

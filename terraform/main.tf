@@ -22,4 +22,8 @@ module "databricks" {
   storage_credential_name = var.storage_credential_name
   external_location_name  = var.external_location_name
   databricks_group_name   = var.databricks_group_name
+  job_name                = "NYC_Taxi_Pipeline_${var.env}"
+  s3_code_path            = "s3://${var.bucket_name}/_artifacts/main.py"
+  environment             = var.env
+  cluster_node_type       = "i3.xlarge"
 }
