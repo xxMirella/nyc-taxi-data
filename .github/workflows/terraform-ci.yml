@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   id-token: write
 
@@ -22,13 +22,14 @@ env:
 
 jobs:
   security_and_fmt:
-    name: "Security Scan & Format"
+    name: "Security Scan & Auto-Format"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
       - name: Gitleaks (Secrets Scan)
         uses: gitleaks/gitleaks-action@v2
@@ -40,25 +41,32 @@ jobs:
         with:
           terraform_version: 1.10.5
 
-      - name: Terraform Format Check
+      - name: Terraform Format (Auto-Fix)
         working-directory: ${{ env.TERRAFORM_WORKING_DIR }}
         shell: bash
+        run: terraform fmt -recursive
+
+      - name: Commit and Push changes
+        shell: bash
         run: |
-          set -euo pipefail
-      
-          if ! output=$(terraform fmt -check -recursive 2>&1); then
-            echo "::error title=Terraform formatting required::One or more Terraform files are not properly formatted."
-            echo "$output"
-            echo ""
-            echo "Run the following command locally from the terraform directory:"
-            echo "terraform fmt -recursive"
-            exit 1
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Verifica se houve mudanças após o fmt
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Formatando arquivos e subindo correções..."
+            git add .
+            git commit -m "chore: terraform fmt auto-fix"
+            git push
+          else
+            echo "Arquivos já estão formatados corretamente."
           fi
 
   terraform_plan:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
     needs: security_and_fmt
+    if: always()
     environment: ci
     env:
       TF_VAR_env: "ci"
@@ -74,6 +82,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
