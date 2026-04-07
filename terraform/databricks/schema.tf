@@ -4,7 +4,7 @@ resource "databricks_external_location" "root_location" {
   url             = "s3://${var.bucket_name}/landing/nyc_taxi_catalog/"
   credential_name = one(databricks_storage_credential.bronze_credential[*].name)
   comment         = "Permite ao Unity Catalog gerenciar todo o bucket"
-depends_on = [var.aws_setup_completed]
+  depends_on      = [var.aws_setup_completed]
 }
 
 resource "databricks_catalog" "nyc_taxi" {
@@ -13,7 +13,7 @@ resource "databricks_catalog" "nyc_taxi" {
   comment       = "Catálogo dedicado para o pipeline NYC Taxi"
   storage_location = "s3://${var.bucket_name}/landing/nyc_taxi_catalog/"
   force_destroy = true
-  depends_on = [databricks_external_location.root_location]
+  depends_on    = [databricks_external_location.root_location]
 }
 
 resource "databricks_schema" "production" {
@@ -21,7 +21,7 @@ resource "databricks_schema" "production" {
   name         = "nyc_taxi_prod"
   owner        = var.databricks_user_email
   storage_root = "s3://${var.bucket_name}/landing/nyc_taxi_catalog/nyc_taxi_prod/"
-  depends_on = [databricks_catalog.nyc_taxi]
+  depends_on   = [databricks_catalog.nyc_taxi]
 }
 
 resource "databricks_volume" "scripts" {
