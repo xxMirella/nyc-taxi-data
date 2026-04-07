@@ -47,9 +47,3 @@ variable "environment" {
   description = "Ambiente (dev/prod)"
   type        = string
 }
-
-variable "cluster_node_type" {
-  description = "Tipo de instância do worker"
-  type        = string
-  default     = "i3.xlarge"
-}
