@@ -28,7 +28,10 @@ data "aws_iam_policy_document" "databricks_s3_access" {
       "s3:ListBucketMultipartUploads",
       "s3:ListMultipartUploadParts"
     ]
-    resources = ["arn:aws:s3:::${var.bucket_name}/${var.bronze_prefix}/*"]
+    resources = [
+      "arn:aws:s3:::${var.bucket_name}/${var.bronze_prefix}/*",
+      "arn:aws:s3:::${var.bucket_name}/_artifacts/*"
+    ]
   }
 }
 
