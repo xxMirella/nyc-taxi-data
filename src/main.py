@@ -1,4 +1,9 @@
 import time
+import sys
+
+if "--zip_path" in sys.argv:
+    zip_idx = sys.argv.index("--zip_path") + 1
+    sys.path.insert(0, sys.argv[zip_idx])
 
 from config.settings import PATHS
 from bronze.ingestor import BronzeIngestor
