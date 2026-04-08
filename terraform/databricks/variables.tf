@@ -38,9 +38,14 @@ variable "job_name" {
   type        = string
 }
 
-variable "s3_code_path" {
-  description = "Caminho completo do S3 onde o main.py está armazenado"
+variable "databricks_run_as_service_principal" {
+  description = "Application ID do service principal usado no run_as do job"
   type        = string
+
+  validation {
+    condition     = can(regex("^[0-9a-fA-F-]{36}$", var.databricks_run_as_service_principal))
+    error_message = "databricks_run_as_service_principal deve ser o Application ID do service principal, no formato UUID, e não o nome amigável."
+  }
 }
 
 variable "environment" {
@@ -57,4 +62,14 @@ variable "aws_setup_completed" {
   type        = any
   description = "Variável técnica para forçar a dependência entre AWS e Databricks"
   default     = null
+}
+
+variable "catalog_name" {
+  type    = string
+  default = "nyc_taxi_catalog"
+}
+
+variable "schema_name" {
+  type    = string
+  default = "nyc_taxi_prod"
 }

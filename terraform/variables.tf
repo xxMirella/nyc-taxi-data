@@ -85,3 +85,8 @@ variable "databricks_user_email" {
   description = "E-mail vindo do GitHub Secrets"
   type        = string
 }
+
+variable "databricks_run_as_service_principal" {
+  description = "Service principal usado como run_as do job"
+  type        = string
+}

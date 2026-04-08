@@ -13,3 +13,11 @@ output "external_location_url" {
 output "job_id" {
   value = databricks_job.nyc_taxi_pipeline.id
 }
+
+output "landing_volume_path" {
+  value = "/Volumes/${var.catalog_name}/${var.schema_name}/${databricks_volume.landing.name}"
+}
+
+output "checkpoints_volume_path" {
+  value = "/Volumes/${var.catalog_name}/${var.schema_name}/${databricks_volume.checkpoints.name}"
+}

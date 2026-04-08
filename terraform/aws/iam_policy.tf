@@ -11,7 +11,9 @@ data "aws_iam_policy_document" "databricks_s3_access" {
       variable = "s3:prefix"
       values = [
         var.bronze_prefix,
-        "${var.bronze_prefix}/*"
+        "${var.bronze_prefix}/*",
+        var.operational_prefix,
+        "${var.operational_prefix}/*"
       ]
     }
   }
@@ -62,6 +64,7 @@ data "aws_iam_policy_document" "databricks_s3_access" {
     ]
     resources = [
       "arn:aws:s3:::${var.bucket_name}/${var.bronze_prefix}/*",
+      "arn:aws:s3:::${var.bucket_name}/${var.operational_prefix}/*",
       "arn:aws:s3:::${var.bucket_name}/_artifacts/*"
     ]
   }
