@@ -18,13 +18,13 @@ module "databricks" {
   databricks_role_arn       = module.aws.databricks_role_arn
   databricks_user_email     = var.databricks_user_email
 
-  aws_setup_completed     = module.aws.databricks_s3_policy_arn
-  bucket_name             = var.bucket_name
-  bronze_prefix           = var.bronze_prefix
-  storage_credential_name = var.storage_credential_name
-  external_location_name  = var.external_location_name
-  databricks_group_name   = var.databricks_group_name
-  job_name                = "NYC_Taxi_Pipeline_${var.env}"
-  s3_code_path            = "s3://${var.bucket_name}/_artifacts/main.py"
-  environment             = var.env
+  databricks_run_as_service_principal = var.databricks_run_as_service_principal
+  aws_setup_completed                 = module.aws.databricks_s3_policy_arn
+  bucket_name                         = var.bucket_name
+  bronze_prefix                       = var.bronze_prefix
+  storage_credential_name             = var.storage_credential_name
+  external_location_name              = var.external_location_name
+  databricks_group_name               = var.databricks_group_name
+  job_name                            = "NYC_Taxi_Pipeline_${var.env}"
+  environment                         = var.env
 }

@@ -27,3 +27,8 @@ variable "databricks_external_id" {
   type    = string
   default = ""
 }
+
+variable "operational_prefix" {
+  type    = string
+  default = "uc-volumes"
+}

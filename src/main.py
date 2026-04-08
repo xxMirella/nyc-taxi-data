@@ -1,13 +1,9 @@
 import time
-import sys
 
-if "--zip_path" in sys.argv:
-    zip_idx = sys.argv.index("--zip_path") + 1
-    sys.path.insert(0, sys.argv[zip_idx])
-
-from config.settings import PATHS
+from config.settings import PATHS, TABLE_NAMES
 from bronze.ingestor import BronzeIngestor
 from silver.processor import SilverProcessor
+from gold.analytics import GoldAnalytics
 from utils.spark import get_spark_session
 from utils.logger import get_logger
 
@@ -22,50 +18,52 @@ def run_production_pipeline():
         logger.info("Inicializando Spark Session...")
         spark = get_spark_session()
 
-        logger.info(f"Iniciando Ingestão Bronze. Origem: {PATHS['landing']}")
-        try:
-            bronze_start = time.time()
-            bronze_handler = BronzeIngestor(
-                spark=spark,
-                source_path=PATHS["landing"],
-                target_path=PATHS["bronze"],
-                checkpoint_base_path=PATHS["checkpoints"]
-            )
-            bronze_handler.execute_incremental_ingestion()
+        logger.info("Iniciando ingestão Bronze. Origem: %s", PATHS["landing"])
+        bronze_start = time.time()
 
-            bronze_duration = time.time() - bronze_start
-            logger.info(f"CAMADA BRONZE FINALIZADA. Duração: {bronze_duration:.2f}s")
+        bronze_handler = BronzeIngestor(
+            spark=spark,
+            source_path=PATHS["landing"],
+            target_table=TABLE_NAMES["bronze"],
+            checkpoint_base_path=PATHS["checkpoints"],
+        )
+        bronze_handler.execute_incremental_ingestion()
 
-        except Exception as e:
-            logger.error(f"FALHA NA CAMADA BRONZE: {str(e)}", exc_info=True)
-            raise
+        bronze_duration = time.time() - bronze_start
+        logger.info("CAMADA BRONZE FINALIZADA. Duração: %.2fs", bronze_duration)
 
         start_dt, end_dt = "2023-01-01", "2023-05-31"
-        logger.info(f"Iniciando Processamento Silver. Período: {start_dt} a {end_dt}")
+        logger.info("Iniciando Processamento Silver. Período: %s a %s", start_dt, end_dt)
 
-        try:
-            silver_start = time.time()
-            silver_handler = SilverProcessor(
-                spark=spark,
-                bronze_path=PATHS["bronze"],
-                silver_path=PATHS["silver"]
-            )
-            silver_handler.process_and_save(start_date=start_dt, end_date=end_dt)
+        silver_start = time.time()
+        silver_handler = SilverProcessor(
+            spark=spark,
+            bronze_table=TABLE_NAMES["bronze"],
+            silver_table=TABLE_NAMES["silver"],
+        )
+        silver_handler.process_and_save(start_date=start_dt, end_date=end_dt)
 
-            silver_duration = time.time() - silver_start
-            logger.info(f"CAMADA SILVER FINALIZADA. Duração: {silver_duration:.2f}s")
+        silver_duration = time.time() - silver_start
+        logger.info("CAMADA SILVER FINALIZADA. Duração: %.2fs", silver_duration)
 
-        except Exception as e:
-            logger.error(f"FALHA NA CAMADA SILVER: {str(e)}", exc_info=True)
-            raise
+        gold_start = time.time()
+        gold_handler = GoldAnalytics(
+            spark=spark,
+            silver_table=TABLE_NAMES["silver"],
+            gold_table=TABLE_NAMES["gold"],
+        )
+        gold_handler.build_monthly_summary()
+
+        gold_duration = time.time() - gold_start
+        logger.info("CAMADA GOLD FINALIZADA. Duração: %.2fs", gold_duration)
 
         total_duration = time.time() - start_time
-        logger.info(f"======= PIPELINE CONCLUÍDO COM SUCESSO EM {total_duration:.2f}s =======")
+        logger.info("======= PIPELINE CONCLUÍDO COM SUCESSO EM %.2fs =======", total_duration)
 
-    except Exception as e:
+    except Exception as exc:
         total_duration = time.time() - start_time
-        logger.critical(f"PIPELINE ABORTADO APÓS {total_duration:.2f}s. Motivo: {str(e)}")
-        raise e
+        logger.exception("PIPELINE ABORTADO APÓS %.2fs. Motivo: %s", total_duration, exc)
+        raise
 
 
 if __name__ == "__main__":

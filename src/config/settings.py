@@ -1,21 +1,32 @@
 from pyspark.sql.types import (StructType, IntegerType, TimestampType,
                                DoubleType, StructField, StringType)
 
+
+CATALOG_NAME = "nyc_taxi_catalog"
+SCHEMA_NAME = "nyc_taxi_prod"
+
+LANDING_VOLUME_NAME = "landing"
+CHECKPOINT_VOLUME_NAME = "checkpoints"
+
+VOLUME_ROOT = f"/Volumes/{CATALOG_NAME}/{SCHEMA_NAME}"
+LANDING_PATH = f"{VOLUME_ROOT}/{LANDING_VOLUME_NAME}"
+CHECKPOINT_BASE_PATH = f"{VOLUME_ROOT}/{CHECKPOINT_VOLUME_NAME}"
+
+TABLE_NAMES = {
+    "bronze": f"{CATALOG_NAME}.{SCHEMA_NAME}.bronze_nyc_taxi_trips",
+    "silver": f"{CATALOG_NAME}.{SCHEMA_NAME}.silver_nyc_taxi_trips",
+    "gold": f"{CATALOG_NAME}.{SCHEMA_NAME}.gold_nyc_taxi_monthly_summary",
+}
+
 BUCKET_NAME = "55-taxi-data"
 BASE_PATH = f"s3://{BUCKET_NAME}"
 
-TABLE_NAMES = {
-    "bronze": "bronze_nyc_taxi_trips",
-    "silver": "silver_nyc_taxi_trips",
-    "gold": "gold_nyc_taxi_monthly_summary"
-}
-
 PATHS = {
-    "landing": f"{BASE_PATH}/landing/",
+    "landing": LANDING_PATH,
+    "checkpoints": CHECKPOINT_BASE_PATH,
     "bronze": f"{BASE_PATH}/bronze/{TABLE_NAMES['bronze']}/",
     "silver": f"{BASE_PATH}/silver/{TABLE_NAMES['silver']}/",
-    "gold": f"{BASE_PATH}/gold/{TABLE_NAMES['gold']}/",
-    "checkpoints": f"{BASE_PATH}/_metadata/checkpoints/"
+    "gold": f"{BASE_PATH}/gold/{TABLE_NAMES['gold']}/"
 }
 
 SILVER_MASTER_SCHEMA = StructType([
